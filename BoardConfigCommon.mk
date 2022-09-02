@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-COMMON_PATH := device/samsung/universal7880-common
+LOCAL_PATH := device/samsung/universal7880-common
 
 BUILD_BROKEN_DUP_RULES := true
 
 # Include path
-TARGET_SPECIFIC_HEADER_PATH := $(COMMON_PATH)/include
+TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
 
 # Firmware
 TARGET_NO_BOOTLOADER := true
@@ -27,7 +27,7 @@ TARGET_NO_RADIOIMAGE := true
 
 # Platform
 TARGET_BOARD_PLATFORM := exynos5
-TARGET_SLSI_VARIANT := bsp
+#TARGET_SLSI_VARIANT := bsp
 TARGET_SOC := exynos7880
 TARGET_BOOTLOADER_BOARD_NAME := universal7880
 BOARD_VENDOR := samsung
@@ -47,6 +47,10 @@ TARGET_2ND_CPU_VARIANT := cortex-a53
 
 # Audio
 AUDIOSERVER_MULTILIB := 32
+USE_XML_AUDIO_POLICY_CONF := 1
+
+# Binder
+TARGET_USES_64_BIT_BINDER := true
 
 # Extracted with libbootimg
 BOARD_CUSTOM_BOOTIMG_MK := hardware/samsung/mkbootimg.mk
@@ -66,10 +70,6 @@ TARGET_LINUX_KERNEL_VERSION := 3.18
 # Kernel config
 TARGET_KERNEL_SOURCE := kernel/samsung/universal7880
 
-# Manifest
-DEVICE_MANIFEST_FILE := $(COMMON_PATH)/manifest.xml
-PRODUCT_ENFORCE_VINTF_MANIFEST_OVERRIDE := true
-
 # Partitions
 BOARD_BOOTIMAGE_PARTITION_SIZE     := 33554432
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 39845888
@@ -77,6 +77,9 @@ BOARD_SYSTEMIMAGE_PARTITION_SIZE   := 4504682496
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 25656557568
 BOARD_CACHEIMAGE_PARTITION_SIZE    := 209715200
 BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE  := ext4
+
+# system_root
+BOARD_BUILD_SYSTEM_ROOT_IMAGE := true
 
 # blockdev --getbsz /dev/block/mmcblk0p9
 BOARD_FLASH_BLOCK_SIZE := 4096
@@ -87,7 +90,7 @@ TARGET_USERIMAGES_USE_EXT4 := true
 
 # Root extra folders
 BOARD_ROOT_EXTRA_FOLDERS += efs
-TARGET_FS_CONFIG_GEN := $(COMMON_PATH)/config.fs
+TARGET_FS_CONFIG_GEN := $(LOCAL_PATH)/config.fs
 
 # Vendor separation
 TARGET_COPY_OUT_VENDOR := system/vendor
@@ -96,7 +99,7 @@ TARGET_COPY_OUT_VENDOR := system/vendor
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_QCOM := true
 BOARD_HAS_QCA_BT_ROME := true
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(COMMON_PATH)/bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(LOCAL_PATH)/bluetooth
 QCOM_BT_USE_BTNV := true
 QCOM_BT_USE_SMD_TTY := true
 
@@ -106,6 +109,8 @@ TARGET_POWERHAL_VARIANT := samsung
 
 # Graphics
 USE_OPENGL_RENDERER := true
+NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
+BOARD_USES_EXYNOS5_COMMON_GRALLOC := true
 
 # VR Front buffer
 #BOARD_USES_VR_FRONT_BUFFER := true
@@ -177,17 +182,18 @@ WIFI_DRIVER_FW_PATH_STA := "sta"
 WIFI_DRIVER_FW_PATH_P2P := "p2p"
 WPA_SUPPLICANT_VERSION := VER_0_8_X
 WPA_SUPPLICANT_USE_HIDL := true
-WIFI_AVOID_IFACE_RESET_MAC_CHANGE := true
+WIFI_HIDL_FEATURE_DISABLE_AP_MAC_RANDOMIZATION := true
 
 # Wifi loader
 BOARD_HAVE_SAMSUNG_WIFI := true
 
 # Build fingerprint
-BUILD_FINGERPRINT := "samsung/a7y17lteskt/a7y17lteskt:9/PPR1.180610.011/A720SKSU5CUJ2:user/release-keys"
-PRIVATE_BUILD_DESC := "a7y17lteskt-user 9 PPR1.180610.011 A720SKSU5CUJ2 release-keys"
+BUILD_FINGERPRINT := "samsung/a7y17lteskt/a7y17lteskt:9/PPR1.180610.011/A720SKSU5CTL2:user/release-keys"
+PRIVATE_BUILD_DESC := "a7y17lteskt-user 9 PPR1.180610.011 A720SKSU5CTL2 release-keys"
 
 # Charger
 BOARD_CHARGING_MODE_BOOTING_LPM := /sys/class/power_supply/battery/batt_lp_charging
+BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_CHARGER_SHOW_PERCENTAGE := true
 CHARGING_ENABLED_PATH := /sys/class/power_supply/battery/batt_lp_charging
 
@@ -198,22 +204,21 @@ TARGET_TAP_TO_WAKE_NODE := /sys/class/sec/tsp/dt2w_enable
 BOARD_MODEM_TYPE := ss333
 BOARD_PROVIDES_LIBRIL := true
 ENABLE_VENDOR_RIL_SERVICE := true
-TARGET_USES_VND_SECRIL := true
 
 # Security Patch Level
-VENDOR_SECURITY_PATCH := 2021-10-01
+VENDOR_SECURITY_PATCH := 2020-12-01
 
 # Release tools
-#TARGET_RELEASETOOLS_EXTENSIONS := $(COMMON_PATH)
+#TARGET_RELEASETOOLS_EXTENSIONS := $(LOCAL_PATH)
 
 # Recovery
 #RECOVERY_VARIANT := twrp
 BOARD_HAS_DOWNLOAD_MODE := true
-TARGET_RECOVERY_FSTAB := $(COMMON_PATH)/ramdisk/fstab.samsungexynos7880
+TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/ramdisk/fstab.samsungexynos7880
 
 # TWRP
 ifeq ($(RECOVERY_VARIANT),twrp)
-PRODUCT_COPY_FILES += $(COMMON_PATH)/twrp/twrp.fstab:recovery/root/etc/twrp.fstab
+PRODUCT_COPY_FILES += device/samsung/universal7880-common/twrp/twrp.fstab:recovery/root/etc/twrp.fstab
 TW_THEME := portrait_hdpi
 TW_BRIGHTNESS_PATH := /sys/class/backlight/panel/brightness
 TW_MAX_BRIGHTNESS := 255
@@ -232,10 +237,10 @@ TW_EXCLUDE_TWRPAPP := true
 endif
 
 # Seccomp filters
-BOARD_SECCOMP_POLICY += $(COMMON_PATH)/seccomp
+BOARD_SECCOMP_POLICY += device/samsung/universal7880-common/seccomp
 
 # SELinux
-BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy
+BOARD_SEPOLICY_DIRS += device/samsung/universal7880-common/sepolicy
 
 # Shims
 TARGET_LD_SHIM_LIBS := \
@@ -247,4 +252,4 @@ TARGET_LD_SHIM_LIBS := \
     /system/lib64/libexynoscamera.so|libexynoscamera_shim.so
 
 # Soong namespaces
-PRODUCT_SOONG_NAMESPACES += $(COMMON_PATH)
+PRODUCT_SOONG_NAMESPACES += $(LOCAL_PATH)

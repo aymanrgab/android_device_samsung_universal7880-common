@@ -27,14 +27,13 @@ PRODUCT_PACKAGES += \
     fstab.samsungexynos7880 \
     init.baseband.rc \
     init.vendor.rilchip.rc \
-    init.vendor.rilcommon.rc \
     init.samsung.rc \
     init.samsungexynos7880.rc \
     init.samsungexynos7880.usb.rc \
     init.recovery.samsungexynos7880.rc \
     init.gps.rc \
     mobicore.rc \
-    wifi_sec.rc \
+    wifi.rc \
     wifi_qcom.rc \
     ueventd.samsungexynos7880.rc
 
@@ -83,28 +82,16 @@ PRODUCT_AAPT_PREBUILT_DPI := xxhdpi xhdpi hdpi
 
 PRODUCT_PACKAGES += \
     android.hardware.graphics.allocator@2.0-impl \
-    android.hardware.graphics.allocator@2.0-service \
-    android.hardware.graphics.composer@2.1-service \
+    android.hardware.graphics.composer@2.1-impl \
     android.hardware.graphics.mapper@2.0-impl \
     android.hardware.memtrack@1.0-impl \
     android.hardware.renderscript@1.0-impl \
-    memtrack.exynos5 \
-    hwcomposer.exynos5 \
-    libhwc2on1adapter
+    gralloc.exynos5 \
+    memtrack.exynos5
 
 PRODUCT_PACKAGES += \
     libion \
     libfimg
-
-# Configstore
-PRODUCT_PACKAGES += \
-    android.hardware.configstore@1.1-service \
-    vndservicemanager
-
-# Health
-PRODUCT_PACKAGES += \
-    android.hardware.health@2.0-impl \
-    android.hardware.health@2.0-service
 
 # Camera
 PRODUCT_PACKAGES += \
@@ -113,8 +100,7 @@ PRODUCT_PACKAGES += \
     camera.device@3.3-impl \
     camera.device@3.4-impl \
     libexynoscamera_shim \
-    libcamera_client_shim \
-    camera.exynos5
+    libcamera_client_shim
 
 # Camera service
 PRODUCT_COPY_FILES += \
@@ -124,7 +110,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-impl \
     android.hardware.drm@1.0-service \
-    android.hardware.drm@1.3-service.clearkey \
+    android.hardware.drm@1.2-service.clearkey \
     libfwdlockengine \
     libdrmclearkeyplugin
 
@@ -136,12 +122,9 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     vendor.lineage.fastcharge@1.0-service.samsung
 
-# Gatekeeper
-PRODUCT_PACKAGES += \
-    android.hardware.gatekeeper@1.0-service.software
-
 # Keymaster
 PRODUCT_PACKAGES += \
+    keystore.exynos5 \
     android.hardware.keymaster@3.0-impl \
     android.hardware.keymaster@3.0-service
 
@@ -153,8 +136,12 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.radio@1.4 \
     android.hardware.radio.config@1.2 \
+    android.hardware.radio@1.3-radio-service.samsung \
     libxml2 \
     libprotobuf-cpp-full
+
+PRODUCT_PACKAGES += \
+    SamsungServiceMode
 
 # Doze
 PRODUCT_PACKAGES += \
@@ -178,11 +165,15 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_PACKAGES += \
     android.hardware.wifi@1.0 \
+    android.hardware.wifi@1.0-impl \
     android.hardware.wifi@1.0-service \
     hostapd \
+    libqsap_sdk \
+    libQWiFiSoftApCfg \
     libwpa_client \
-    WifiOverlay \
     wificond \
+    wifilogd \
+    wlutil \
     wpa_supplicant \
     wpa_supplicant.conf
 
@@ -193,23 +184,28 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/init/android.hardware.bluetooth@1.0-service-qti.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.bluetooth@1.0-service-qti.rc
-
+    
 # NFC
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/nfc/libnfc-sec-vendor.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libnfc-sec-vendor.conf \
     $(LOCAL_PATH)/configs/nfc/libnfc-nci.conf:system/etc/libnfc-nci.conf \
+    $(LOCAL_PATH)/configs/nfc/nfc_key:$(TARGET_COPY_OUT_VENDOR)/etc/nfc_key \
     $(LOCAL_PATH)/configs/nfc/nfcee_access.xml:system/etc/nfcee_access.xml
 
 PRODUCT_PACKAGES += \
-    android.hardware.nfc@1.2-service.samsung \
+    android.hardware.nfc@1.0 \
+    android.hardware.nfc@1.1 \
     com.android.nfc_extras \
     libnfc-nci \
     libnfc_nci_jni \
     NfcNci \
-    Tag
+    Tag \
+    libclang_rt.ubsan_standalone-aarch64-android
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/init/sec.android.hardware.nfc@1.1-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/sec.android.hardware.nfc@1.1-service.rc
 
 # Audio
-USE_XML_AUDIO_POLICY_CONF := 1
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio/mixer_gains.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_gains.xml \
     $(LOCAL_PATH)/configs/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml \
@@ -222,19 +218,20 @@ PRODUCT_COPY_FILES += \
     frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml
 
 PRODUCT_PACKAGES += \
-    android.hardware.audio.service \
-    android.hardware.audio@6.0-impl \
-    android.hardware.audio.effect@6.0-impl \
+    android.hardware.audio@5.0-impl \
+    android.hardware.audio@2.0-service \
+    android.hardware.audio.effect@5.0-impl \
     android.hardware.audio.common-util \
     android.hardware.audio.common@2.0-util \
     android.hardware.audio.common@2.0 \
-    android.hardware.audio.common@6.0-util \
-    android.hardware.audio.common@6.0 \
+    android.hardware.audio.common@5.0-util \
+    android.hardware.audio.common@5.0 \
     audio_amplifier.universal7880_32 \
     audio.primary.universal7880_32 \
     audio.a2dp.default \
     audio.usb.default \
     audio.r_submix.default \
+    libtfa98xx_32 \
     libtinycompress
 
 # Media
@@ -289,7 +286,7 @@ PRODUCT_PACKAGES += \
 
 # Livedisplay
 PRODUCT_PACKAGES += \
-    vendor.lineage.livedisplay@2.1-service.universal7880
+    vendor.lineage.livedisplay@2.0-service.samsung-exynos
 
 # Trust HAL
 PRODUCT_PACKAGES += \
@@ -307,33 +304,29 @@ PRODUCT_PACKAGES += \
     android.hardware.vibrator@1.0-impl \
     android.hardware.vibrator@1.0-service
 
-# VNDK prebuilts
-#PRODUCT_COPY_FILES += \
-#    prebuilts/vndk/v29/arm64/arch-arm64-armv8-a/shared/vndk-core/libprotobuf-cpp-lite.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libprotobuf-cpp-lite-v29.so \
-#    prebuilts/vndk/v29/arm64/arch-arm-armv8-a/shared/vndk-core/libprotobuf-cpp-lite.so:$(TARGET_COPY_OUT_VENDOR)/lib/libprotobuf-cpp-lite-v29.so \
-#   prebuilts/vndk/v29/arm64/arch-arm64-armv8-a/shared/vndk-core/libprotobuf-cpp-full.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libprotobuf-cpp-full-v29.so \
-#  prebuilts/vndk/v29/arm64/arch-arm-armv8-a/shared/vndk-core/libprotobuf-cpp-full.so:$(TARGET_COPY_OUT_VENDOR)/lib/libprotobuf-cpp-full-v29.so
-
 # Offmode charger
 PRODUCT_PACKAGES += \
-    charger_res_images
+    charger_res_images \
+    lineage_charger_res_images
 
 # USB
 PRODUCT_PACKAGES += \
-    android.hardware.usb@1.1-service.typec
+    android.hardware.usb@1.1-service.universal7880
+
+# HIDL Manifest
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/manifest.xml:$(TARGET_COPY_OUT_VENDOR)/manifest.xml
 
 PRODUCT_PACKAGES += \
     android.hidl.base@1.0 \
-    android.hidl.manager@1.0 \
-    libhidltransport \
-    libhwbinder
+    android.hidl.manager@1.0
 
 # System.prop
 TARGET_SYSTEM_PROP += device/samsung/universal7880-common/system.prop
 
 # call Samsung LSI board support package
-$(call inherit-product, hardware/samsung_slsi/exynos5/exynos5.mk)
-$(call inherit-product, hardware/samsung_slsi/exynos7880/exynos7880.mk)
+#$(call inherit-product, hardware/samsung_slsi/exynos5/exynos5.mk)
+#$(call inherit-product, hardware/samsung_slsi/exynos7880/exynos7880.mk)
 
 # call the proprietary setup
 $(call inherit-product, vendor/samsung/universal7880-common/universal7880-common-vendor.mk)
