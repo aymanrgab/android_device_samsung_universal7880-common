@@ -103,8 +103,6 @@ vendor/lib64/libwrappergps.so
 # Graphics
 lib64/hw/gralloc.exynos5.so
 lib/hw/gralloc.exynos5.so
-lib64/libExynosHWCService.so
-lib/libExynosHWCService.so
 lib64/libexynosscaler.so
 lib/libexynosscaler.so
 vendor/lib64/libion_exynos.so
